@@ -2,6 +2,7 @@ import api from './APIService';
 import { CreateSubTask, SubTask, UpdateSubTask } from '../types/SubTask';
 import { Task, UpdateTask } from '../types/Task';
 import TaskService from './TaskService';
+import { convertDateToUnix } from '../utils/dateUtils';
 
 const SubTaskService = {
 
@@ -107,6 +108,29 @@ const SubTaskService = {
       .catch(error => {
         throw new Error(error || "Unknown error @ SubTaskService");
       })
+  },
+
+
+  async getSubtasksBeforeDue(userId: string | null, days: number = 14) {
+    const due = (days * 86400) + convertDateToUnix(new Date());
+    const date = due.toString();
+    return api.get<SubTask[]>("/subtasks?userId=" + userId + '&dueDate=' + date)
+      .then((resolve) => {
+        return resolve.data
+      })
+      .catch(error => {
+        {
+          throw new Error(error || "Unknown error @ SubTaskService");
+        }
+      })
+  },
+
+  async updateSubtaskStatus(subtaskId: string | null, status: number) {
+    return api.put<SubTask>('/subtasks/' + subtaskId + '?status=' + status.toString(), {})
+      .then(resolve => {
+        return resolve.data;
+      })
+      .catch(reject => { throw new Error(reject || "Unknown error @ SubTaskService") });
   }
 }
 

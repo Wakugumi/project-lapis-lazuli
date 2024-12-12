@@ -83,6 +83,14 @@ const TaskService = {
       .catch(error => {
         throw new Error(error || "Unknown error @ TaskService");
       })
+  },
+
+  async getTaskBySubtask(subtaskId: string | null) {
+    return api.get<Task[]>("tasks?subtaskId=" + subtaskId)
+      .then(resolve => {
+        return resolve.data[0];
+      })
+      .catch(error => { throw new Error(error || "Unknown error @ TaskService") })
   }
 
 }
